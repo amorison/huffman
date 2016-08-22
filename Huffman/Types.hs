@@ -1,6 +1,7 @@
 module Huffman.Types where
 
 import Data.Function(on)
+import Data.Ord(comparing)
 import Data.Set(Set)
 
 type Symbol s = s
@@ -11,7 +12,7 @@ newtype SWmapping s w = SWmapping (Symbol s, Weight w) deriving (Show)
 instance (Eq s) => Eq (SWmapping s w) where
     (==) = (==) `on` symbolSW
 instance (Ord s) => Ord (SWmapping s w) where
-    compare = compare `on` symbolSW
+    compare = comparing symbolSW
 
 symbolSW :: SWmapping s w -> Symbol s
 symbolSW (SWmapping (s, _)) = s
@@ -30,7 +31,7 @@ data HuffmanTree s w = Leaf (SWmapping s w) | Node (Weight w)
 instance (Eq w) => Eq (HuffmanTree s w) where
     (==) = (==) `on` weightHT
 instance (Ord w) => Ord (HuffmanTree s w) where
-    compare = compare `on` weightHT
+    compare = comparing weightHT
 
 weightHT :: HuffmanTree s w -> Weight w
 weightHT (Leaf sw) = weightSW sw
