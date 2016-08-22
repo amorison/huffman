@@ -3,7 +3,7 @@ module Huffman.CodeBookBuilder
 ) where
 
 import Huffman.Types
-import Data.List(insert, sort, sortOn, uncons, group, foldl')
+import Data.List(insert, sort, sortOn, group, foldl')
 import Data.Ord
 
 decrement :: HuffmanCode -> HuffmanCode
