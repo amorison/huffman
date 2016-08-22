@@ -9,8 +9,7 @@ type HuffmanCode = String
 type SWmapping s w = (Symbol s, Weight w)
 type FrequencyTable s w = [SWmapping s w]
 
-type SHmapping s = (Symbol s, HuffmanCode)
-type HuffmanCodeBook s = [SHmapping s]
+type HuffmanCodeBook s = [(Symbol s, Int, HuffmanCode)]
 
 data HuffmanTree s w = Leaf (SWmapping s w) | Node (Weight w)
                                                    (HuffmanTree s w)
