@@ -3,14 +3,14 @@ module Huffman.CodeBookBuilder
 ) where
 
 import Huffman.Types
-import Data.List(insert, sort, sortOn, group, foldl')
+import Data.List(insert, sort, sortOn, uncons, group, foldl')
 
 increment :: HuffmanCode -> HuffmanCode
-increment "" = "1"
-increment code = if lsb == '0'
-                 then hb ++ "1"
-                 else increment hb ++ "0"
-                     where (hb, lsb) = (init code, last code)
+increment [] = [True]
+increment code = if not lsb
+                 then True:hb
+                 else False:(increment hb)
+                     where Just (lsb, hb) = uncons code
 
 -- expects a list of HT sorted by weight
 reduceHTs :: (Num w, Ord w) => [HuffmanTree s w] -> HuffmanTree s w
@@ -33,9 +33,9 @@ depthLeaves = dHelper 0
 
 canonicalBook :: (Ord s) => [(Symbol s, Int)] -> HuffmanCodeBook s
 canonicalBook = reverse . foldl' fldFun [] . sortOn snd . sortOn fst
-    where fldFun [] (s,d) = [(s,d,replicate d '0')]
+    where fldFun [] (s,d) = [(s,d,replicate d False)]
           fldFun xs@((_,dx,cx):xt) (s,d) = (s,d,c):xs
-              where c = increment cx ++ replicate (d-dx) '0'
+              where c = replicate (d-dx) False ++ increment cx
 
 codeFromTree :: (Ord s) => HuffmanTree s w -> HuffmanCodeBook s
 codeFromTree = canonicalBook . depthLeaves

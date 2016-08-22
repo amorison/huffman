@@ -4,7 +4,7 @@ import Data.Function(on)
 
 type Symbol s = s
 type Weight w = w
-type HuffmanCode = String
+type HuffmanCode = [Bool]
 
 type SWmapping s w = (Symbol s, Weight w)
 type FrequencyTable s w = [SWmapping s w]
