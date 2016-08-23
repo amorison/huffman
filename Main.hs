@@ -2,12 +2,13 @@ module Main(main) where
 
 import Huffman.CodeBook(CodeBook, huffmanEncode)
 import Huffman.Statistics(entropy)
+import qualified Data.ByteString.Lazy as BL
 
-printCodeBook :: (Ord s, Show s) => CodeBook s -> String
+printCodeBook :: CodeBook -> String
 printCodeBook = unlines . map show
 
 main = do
-    message <- getContents
+    message <- BL.getContents
     let codeBook = huffmanEncode message
         (opt, enc) = entropy codeBook
     putStr $ printCodeBook codeBook
