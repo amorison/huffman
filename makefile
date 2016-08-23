@@ -1,18 +1,26 @@
 GHC=ghc
-MODULES=Huffman/CodeBookBuilder.hs Huffman/Types.hs
+REL=huffman
+DBG=huffman-debug
+CB=Huffman/CodeBook
+MODULES=$(CB)/Builder.hs $(CB)/Internal.hs
 
-.PHONY: all clean debug
+.PHONY: all release debug cleanall clean
 
-all: huffman
+all: release debug
 
-debug: huffman-debug
+release: $(REL)
 
-huffman: Main.hs $(MODULES)
+debug: $(DBG)
+
+$(REL): Main.hs $(MODULES)
 	$(GHC) -O2 -o $@ --make $<
 
-huffman-debug: Main.hs $(MODULES)
+$(DBG): Main.hs $(MODULES)
 	$(GHC) -rtsopts -o $@ --make $<
+
+cleanall: clean
+	@rm -f $(REL) $(DBG)
 
 clean:
 	@rm -f *.hi *.o
-	@rm -f Huffman/*.hi Huffman/*.o
+	@rm -f $(CB)/*.hi $(CB)/*.o
