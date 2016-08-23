@@ -1,8 +1,8 @@
-module Huffman.CodeBook.Statistics
+module Huffman.Statistics
 ( entropy
 ) where
 
-import Huffman.CodeBook.Internal
+import Huffman.Internal
 
 lg2 :: (Floating a) => a -> a
 lg2 = logBase 2

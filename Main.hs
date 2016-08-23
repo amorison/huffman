@@ -1,7 +1,7 @@
 module Main(main) where
 
-import Huffman.CodeBook.Builder(CodeBook, huffmanEncode)
-import Huffman.CodeBook.Statistics(entropy)
+import Huffman.CodeBook(CodeBook, huffmanEncode)
+import Huffman.Statistics(entropy)
 
 printCodeBook :: (Ord s, Show s) => CodeBook s -> String
 printCodeBook = unlines . map show

@@ -1,8 +1,8 @@
 GHC=ghc
 REL=huffman
 DBG=huffman-debug
-CB=Huffman/CodeBook
-MODULES=$(CB)/Builder.hs $(CB)/Internal.hs
+MODDIR=Huffman
+MODULES=$(MODDIR)/CodeBook.hs $(MODDIR)/Internal.hs $(MODDIR)/Statistics.hs
 
 .PHONY: all release debug cleanall clean
 
@@ -23,4 +23,4 @@ cleanall: clean
 
 clean:
 	@rm -f *.hi *.o
-	@rm -f $(CB)/*.hi $(CB)/*.o
+	@rm -f $(MODDIR)/*.hi $(MODDIR)/*.o
