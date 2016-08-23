@@ -26,7 +26,7 @@ weightSW (SWmapping (_, w)) = w
 
 type FrequencyTable s = Set.Set (SWmapping s)
 
-type HuffmanCodeBook s = [(Symbol s, CodeLength, HuffmanCode)]
+type CodeBook s = [(Symbol s, Weight, CodeLength, HuffmanCode)]
 
 data HuffmanTree s = Leaf (SWmapping s) | Node Weight
                                                (HuffmanTree s)
@@ -68,18 +68,18 @@ reduceHTs (ht1:ht2:hts) = reduceHTs $ insert (mergeHTs ht1 ht2) hts
 buildTree :: FrequencyTable s -> HuffmanTree s
 buildTree = reduceHTs . sort . map Leaf . Set.toList
 
-depthLeaves :: HuffmanTree s -> [(CodeLength, Symbol s)]
+depthLeaves :: HuffmanTree s -> [(CodeLength, Symbol s, Weight)]
 depthLeaves = dHelper 0
-    where dHelper d (Leaf (SWmapping (s, _))) = [(d, s)]
+    where dHelper d (Leaf (SWmapping (s, w))) = [(d, s, w)]
           dHelper d (Node _ ht1 ht2) = depths1 ++ depths2
               where depths1 = dHelper (d+1) ht1
                     depths2 = dHelper (d+1) ht2
 
-canonicalBook :: (Ord s) => [(CodeLength, Symbol s)] -> HuffmanCodeBook s
+canonicalBook :: (Ord s) => [(CodeLength, Symbol s, Weight)] -> CodeBook s
 canonicalBook = foldl' fldFun [] . sortOn Down
-    where fldFun [] (d,s) = [(s,d,replicate d True)]
-          fldFun xs@((_,dx,cx):xt) (d,s) = (s,d,c):xs
+    where fldFun [] (d,s,w) = [(s,w,d,replicate d True)]
+          fldFun xs@((_,_,dx,cx):xt) (d,s,w) = (s,w,d,c):xs
               where c = decrement $ drop (dx-d) cx
 
-codeFromTree :: (Ord s) => HuffmanTree s -> HuffmanCodeBook s
+codeFromTree :: (Ord s) => HuffmanTree s -> CodeBook s
 codeFromTree = canonicalBook . depthLeaves
