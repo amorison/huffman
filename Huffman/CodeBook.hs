@@ -6,11 +6,12 @@ module Huffman.CodeBook
 ) where
 
 import Huffman.Internal
+import Control.Monad.ST
+import Data.Array.ST
+import Data.Foldable
 import Data.List(insert, sort, sortOn, foldl')
 import Data.Ord
 import qualified Data.ByteString.Lazy as BL
-import qualified Data.Map.Strict as Map
-
 
 -- construction of the code book is a three steps process:
 --   - construction of the FrequencyTable of the Symbols
@@ -26,8 +27,15 @@ huffmanEncode = codeFromTree . buildTree . buildFreqTable
 --   each Symbol is read after the other and its frequency
 --   is updated
 buildFreqTable :: Message -> FrequencyTable
-buildFreqTable = BL.foldl' (flip $ Map.adjust (+1)) mapZero
-    where mapZero = Map.fromList $ zip ([0..]::[Symbol]) $ repeat 0
+buildFreqTable msg = filter ((/=0).snd) $ zip [0..] $ runST $ incSymbol msg
+
+incSymbol :: Message -> ST s ([Weight])
+incSymbol msg = do
+    tbl <- newArray (0,255) 0 :: ST s (STUArray s Symbol Weight)
+    forM_ (BL.unpack msg) $ \sbl -> do
+        n <- readArray tbl sbl
+        writeArray tbl sbl (n+1)
+    getElems tbl
 
 
 -- construction of the Huffman tree
@@ -37,7 +45,7 @@ buildFreqTable = BL.foldl' (flip $ Map.adjust (+1)) mapZero
 --   The two trees with the lowest weight are merged
 --   until only one final tree remain
 buildTree :: FrequencyTable -> HuffmanTree
-buildTree = reduceHTs . sort . map Leaf . filter ((/=0).snd) . Map.toList
+buildTree = reduceHTs . sort . map Leaf
 
 -- expects a list of HT sorted by weight
 reduceHTs :: [HuffmanTree] -> HuffmanTree
