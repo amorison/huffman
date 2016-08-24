@@ -3,6 +3,7 @@ REL=huffman
 DBG=huffman-debug
 MODDIR=Huffman
 MODULES=$(MODDIR)/CodeBook.hs $(MODDIR)/Internal.hs $(MODDIR)/Statistics.hs
+RTS=-with-rtsopts="-H128m"
 
 .PHONY: all release debug cleanall clean
 
@@ -13,10 +14,10 @@ release: $(REL)
 debug: $(DBG)
 
 $(REL): Main.hs $(MODULES)
-	$(GHC) -O2 -o $@ --make $<
+	$(GHC) $(RTS) -O2 -o $@ --make $<
 
 $(DBG): Main.hs $(MODULES)
-	$(GHC) -rtsopts -o $@ --make $<
+	$(GHC) $(RTS) -rtsopts -o $@ --make $<
 
 cleanall: clean
 	@rm -f $(REL) $(DBG)
