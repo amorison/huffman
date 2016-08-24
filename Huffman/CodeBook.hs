@@ -7,10 +7,9 @@ module Huffman.CodeBook
 
 import Huffman.Internal
 import Data.List(insert, sort, sortOn, foldl')
-import Data.Maybe(fromJust)
 import Data.Ord
-import qualified Data.Set as Set
 import qualified Data.ByteString.Lazy as BL
+import qualified Data.Map.Strict as Map
 
 
 -- construction of the code book is a three steps process:
@@ -27,24 +26,18 @@ huffmanEncode = codeFromTree . buildTree . buildFreqTable
 --   each Symbol is read after the other and its frequency
 --   is updated
 buildFreqTable :: Message -> FrequencyTable
-buildFreqTable = BL.foldl' insertSymbol Set.empty
-
-insertSymbol :: FrequencyTable -> Symbol -> FrequencyTable
-insertSymbol fTbl sbl = if Just swm == prSbl
-                        then Set.insert (SWmapping (sbl, prW+1)) fTbl
-                        else Set.insert swm fTbl
-    where swm = SWmapping (sbl, 1)
-          prSbl = Set.lookupLE (SWmapping (sbl,1)) fTbl
-          prW = weightSW $ fromJust prSbl
+buildFreqTable = BL.foldl' (flip $ Map.adjust (+1)) mapZero
+    where mapZero = Map.fromList $ zip ([0..]::[Symbol]) $ repeat 0
 
 
 -- construction of the Huffman tree
 --   the content of the FrequencyTable is changed
---   into a bunch of Huffman tree
+--   into a bunch of Huffman tree (after removal
+--   of absent Symbols)
 --   The two trees with the lowest weight are merged
 --   until only one final tree remain
 buildTree :: FrequencyTable -> HuffmanTree
-buildTree = reduceHTs . sort . map Leaf . Set.toList
+buildTree = reduceHTs . sort . map Leaf . filter ((/=0).snd) . Map.toList
 
 -- expects a list of HT sorted by weight
 reduceHTs :: [HuffmanTree] -> HuffmanTree
@@ -67,7 +60,7 @@ decrement (lsb:hb) = if lsb
 
 depthLeaves :: HuffmanTree -> [(CodeLength, Symbol, Weight)]
 depthLeaves = dHelper 0
-    where dHelper d (Leaf (SWmapping (s, w))) = [(d, s, w)]
+    where dHelper d (Leaf (s, w)) = [(d, s, w)]
           dHelper d (Node _ ht1 ht2) = depths1 ++ depths2
               where depths1 = dHelper (d+1) ht1
                     depths2 = dHelper (d+1) ht2

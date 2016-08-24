@@ -3,8 +3,8 @@ module Huffman.Internal where
 import Data.Function(on)
 import Data.Ord(comparing)
 import Data.Word
-import qualified Data.Set as Set
 import qualified Data.ByteString.Lazy as BL
+import qualified Data.Map.Strict as Map
 
 type Symbol = Word8
 type Message = BL.ByteString
@@ -12,32 +12,20 @@ type Weight = Int
 type CodeLength = Int
 type HuffmanCode = [Bool]
 
-newtype SWmapping = SWmapping (Symbol, Weight)
-instance Eq SWmapping where
-    (==) = (==) `on` symbolSW
-instance Ord SWmapping where
-    compare = comparing symbolSW
-
-symbolSW :: SWmapping -> Symbol
-symbolSW (SWmapping (s, _)) = s
-
-weightSW :: SWmapping -> Weight
-weightSW (SWmapping (_, w)) = w
-
-type FrequencyTable = Set.Set SWmapping
+type FrequencyTable = Map.Map Symbol Weight
 
 type CodeBook = [(Symbol, Weight, CodeLength, HuffmanCode)]
 
-data HuffmanTree = Leaf SWmapping | Node Weight
-                                         HuffmanTree
-                                         HuffmanTree
+data HuffmanTree = Leaf (Symbol, Weight) | Node Weight
+                                                HuffmanTree
+                                                HuffmanTree
 instance Eq HuffmanTree where
     (==) = (==) `on` weightHT
 instance Ord HuffmanTree where
     compare = comparing weightHT
 
 weightHT :: HuffmanTree -> Weight
-weightHT (Leaf sw) = weightSW sw
+weightHT (Leaf (_, w)) = w
 weightHT (Node w _ _) = w
 
 mergeHTs :: HuffmanTree -> HuffmanTree -> HuffmanTree
