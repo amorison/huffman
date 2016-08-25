@@ -23,14 +23,6 @@ entropyShannon cb = sum $ map ((\p -> (-p)*lg2 p) . getP) cb
     where getP = (/wTot) . fromIntegral . getSymbolWeight
           wTot = fromIntegral $ totalMsgLength cb
 
--- extract weight of a CodeBook entry
-getSymbolWeight :: (Symbol, Weight, CodeLength, HuffmanCode) -> Weight
-getSymbolWeight (_, w, _, _) = w
-
--- extract code length of a CodeBook entry
-getCodeLength :: (Symbol, Weight, CodeLength, HuffmanCode) -> CodeLength
-getCodeLength (_, _, l, _) = l
-
 -- necessary number of bits to encode CodeLength
 nBitsCodeLength :: CodeBook -> Int
 nBitsCodeLength = ceiling . lg2 . fromIntegral . maximum . map getCodeLength

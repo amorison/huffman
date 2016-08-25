@@ -15,6 +15,14 @@ type FrequencyTable = [(Symbol, Weight)]
 
 type CodeBook = [(Symbol, Weight, CodeLength, HuffmanCode)]
 
+-- extract weight of a CodeBook entry
+getSymbolWeight :: (Symbol, Weight, CodeLength, HuffmanCode) -> Weight
+getSymbolWeight (_, w, _, _) = w
+
+-- extract code length of a CodeBook entry
+getCodeLength :: (Symbol, Weight, CodeLength, HuffmanCode) -> CodeLength
+getCodeLength (_, _, l, _) = l
+
 data HuffmanTree = Leaf (Symbol, Weight) | Node Weight
                                                 HuffmanTree
                                                 HuffmanTree
