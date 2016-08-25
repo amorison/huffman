@@ -67,16 +67,16 @@ decrement (lsb:hb) = if lsb
                      else True:(decrement hb)
 
 depthLeaves :: HuffmanTree -> [(CodeLength, Symbol, Weight)]
-depthLeaves = dHelper 0
-    where dHelper d (Leaf (s, w)) = [(d, s, w)]
-          dHelper d (Node _ ht1 ht2) = depths1 ++ depths2
-              where depths1 = dHelper (d+1) ht1
-                    depths2 = dHelper (d+1) ht2
+depthLeaves = go 0
+    where go d (Leaf (s, w)) = [(d, s, w)]
+          go d (Node _ ht1 ht2) = depths1 ++ depths2
+              where depths1 = go (d+1) ht1
+                    depths2 = go (d+1) ht2
 
 canonicalBook :: [(CodeLength, Symbol, Weight)] -> CodeBook
-canonicalBook = foldl' fldFun [] . sortOn Down
-    where fldFun [] (d,s,w) = [(s,w,d,replicate d True)]
-          fldFun xs@((_,_,dx,cx):xt) (d,s,w) = (s,w,d,c):xs
+canonicalBook = foldl' go [] . sortOn Down
+    where go [] (d,s,w) = [(s,w,d,replicate d True)]
+          go xs@((_,_,dx,cx):xt) (d,s,w) = (s,w,d,c):xs
               where c = decrement $ drop (dx-d) cx
 
 codeFromTree :: HuffmanTree -> CodeBook
