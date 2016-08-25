@@ -25,6 +25,9 @@ getSymbolWeight (_, w, _, _) = w
 getCodeLength :: CodeBookEntry -> CodeLength
 getCodeLength (_, _, l, _) = l
 
+getCode :: CodeBookEntry -> HuffmanCode
+getCode (_, _, _, c) = c
+
 data HuffmanTree = Leaf (Symbol, Weight) | Node Weight
                                                 HuffmanTree
                                                 HuffmanTree
