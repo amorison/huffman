@@ -25,7 +25,8 @@ entropyShannon cb = sum $ map ((\p -> (-p)*lg2 p) . getP) cb
 
 -- necessary number of bits to encode CodeLength
 nBitsCodeLength :: CodeBook -> Int
-nBitsCodeLength = ceiling . lg2 . fromIntegral . maximum . map getCodeLength
+nBitsCodeLength = floor . (+1) . lg2 . fromIntegral .
+                  maximum . map getCodeLength
 
 -- total length in bytes of initial message
 totalMsgLength :: CodeBook -> Weight
