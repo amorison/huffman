@@ -1,8 +1,6 @@
 module Huffman.CodeBook
-( Symbol
-, Message
-, CodeBook
-, huffmanEncode
+( buildCodeBook
+, orderedLengthCode
 ) where
 
 import Huffman.Internal
@@ -19,8 +17,8 @@ import qualified Data.ByteString.Lazy as BL
 --   - construction of the Huffman tree from this table
 --   - determination of the canonical code that should
 --     be attributed to each Symbol based on this tree
-huffmanEncode :: Message -> CodeBook
-huffmanEncode = codeFromTree . buildTree . buildFreqTable
+buildCodeBook :: Message -> CodeBook
+buildCodeBook = codeFromTree . buildTree . buildFreqTable
 
 
 -- construction of FrequencyTable
@@ -81,3 +79,15 @@ canonicalBook = foldl' go [] . sortOn Down
 
 codeFromTree :: HuffmanTree -> CodeBook
 codeFromTree = canonicalBook . depthLeaves
+
+
+-- CodeBook manipulations
+
+-- return list of CodeLength for all possible Symbol
+-- even the non-present in the message (with a null
+-- code length)
+orderedLengthCode :: CodeBook -> [CodeLength]
+orderedLengthCode = reverse . go 0 [] . sortOn getSymbol
+    where go curIdx ordList [] = replicate (256-curIdx) 0 ++ ordList
+          go curIdx ordList ((s,_,l,_):cbt) =
+            go (toInt s+1) (l:(replicate (toInt s-curIdx) 0 ++ ordList)) cbt

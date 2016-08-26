@@ -44,3 +44,7 @@ mergeHTs :: HuffmanTree -> HuffmanTree -> HuffmanTree
 mergeHTs ht1 ht2 = Node (w1+w2) ht1 ht2
     where w1 = weightHT ht1
           w2 = weightHT ht2
+
+-- some conversion stuff
+toWord8 = fromIntegral :: Int   -> Word8
+toInt   = fromIntegral :: Word8 -> Int
