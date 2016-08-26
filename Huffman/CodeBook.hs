@@ -77,11 +77,15 @@ codeFromTree = canonicalBook . depthLeaves
 
 -- CodeBook manipulations
 
--- return list of CodeLength for all possible Symbol
--- even the non-present in the message (with a null
--- code length)
+-- return list of f(CodeBookEntry) for all Symbols (0-255),
+-- putting a default value for absent Symbols
+orderedListOf :: (CodeBookEntry -> a) -> a -> CodeBook -> [a]
+orderedListOf f dflt = reverse . go 0 [] . sortOn getSymbol
+    where go curIdx ordList [] = replicate (256-curIdx) dflt ++ ordList
+          go curIdx ordList (ce:cbt) =
+            go (s+1) ((f ce):(replicate (s-curIdx) dflt ++ ordList)) cbt
+              where s = toInt $ getSymbol ce
+
+-- return list of CodeLength for all possible Symbols
 orderedLengthCode :: CodeBook -> [CodeLength]
-orderedLengthCode = reverse . go 0 [] . sortOn getSymbol
-    where go curIdx ordList [] = replicate (256-curIdx) 0 ++ ordList
-          go curIdx ordList ((s,_,l,_):cbt) =
-            go (toInt s+1) (l:(replicate (toInt s-curIdx) 0 ++ ordList)) cbt
+orderedLengthCode = orderedListOf getCodeLength 0
