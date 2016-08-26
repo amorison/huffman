@@ -10,8 +10,9 @@ printCodeBook = unlines . map show
 main = do
     message <- BL.getContents
     let codeBook = huffmanEncode message
-        (opt, enc) = entropy codeBook
+        (opt, enc, encTot) = entropy codeBook
     putStr $ printCodeBook codeBook
     putStrLn $ "\nInformation content (bits/symbol):"
-    putStrLn $ "Entropy: " ++ show opt
-    putStrLn $ "Encoding: " ++ show enc
+    putStrLn $ "Entropy:     " ++ show opt
+    putStrLn $ "Encoding:    " ++ show enc
+    putStrLn $ "With header: " ++ show encTot

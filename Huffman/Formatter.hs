@@ -24,11 +24,9 @@ encode msg cb = encodeHeader cb
 --                   + padding between header and encoded Message)
 --     - encoded tree with the best method
 encodeHeader :: CodeBook -> Message
-encodeHeader cb = if 256*bitsCode <= nSymbols*(8+bitsCode)
+encodeHeader cb = if sizeAS cb <= sizePS cb
                     then encHdrAllSymbols cb
                     else encHdrPresentSymbols cb
-    where bitsCode = nBitsCodeLength cb
-          nSymbols = length cb
 
 -- header contains the length of code for all symbols, even the non present
 encHdrAllSymbols :: CodeBook -> Message
