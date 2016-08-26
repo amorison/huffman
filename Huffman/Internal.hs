@@ -9,7 +9,7 @@ type Symbol = Word8
 type Message = BL.ByteString
 type Weight = Int
 type CodeLength = Int
-type HuffmanCode = [Bool]
+type HuffmanCode = Integer
 
 type FrequencyTable = [(Symbol, Weight)]
 

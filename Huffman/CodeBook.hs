@@ -58,12 +58,6 @@ reduceHTs (ht1:ht2:hts) = reduceHTs $ insert (mergeHTs ht1 ht2) hts
 --   the canonical Huffman code is then attributed
 --   to all the Symbol starting with the one with
 --   the longest code
-decrement :: HuffmanCode -> HuffmanCode
-decrement [] = []
-decrement (lsb:hb) = if lsb
-                     then False:hb
-                     else True:(decrement hb)
-
 depthLeaves :: HuffmanTree -> [(CodeLength, Symbol, Weight)]
 depthLeaves = go 0
     where go d (Leaf (s, w)) = [(d, s, w)]
@@ -73,9 +67,9 @@ depthLeaves = go 0
 
 canonicalBook :: [(CodeLength, Symbol, Weight)] -> CodeBook
 canonicalBook = foldl' go [] . sortOn Down
-    where go [] (d,s,w) = [(s,w,d,replicate d True)]
+    where go [] (d,s,w) = [(s, w, d, 2^d - 1)]
           go xs@((_,_,dx,cx):xt) (d,s,w) = (s,w,d,c):xs
-              where c = decrement $ drop (dx-d) cx
+              where c = cx `quot` 2^(max 0 (dx-d)) - 1
 
 codeFromTree :: HuffmanTree -> CodeBook
 codeFromTree = canonicalBook . depthLeaves
