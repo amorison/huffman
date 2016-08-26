@@ -8,7 +8,7 @@ import qualified Data.ByteString.Lazy as BL
 type Symbol = Word8
 type Message = BL.ByteString
 type Weight = Int
-type CodeLength = Int
+type CodeLength = Word8
 type HuffmanCode = Integer
 
 type FrequencyTable = [(Symbol, Weight)]

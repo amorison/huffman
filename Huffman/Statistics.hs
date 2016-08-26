@@ -33,9 +33,9 @@ totalMsgLength :: CodeBook -> Weight
 totalMsgLength = sum . map getSymbolWeight
 
 -- total length in bits of encoded message
-totalEncodedLength :: CodeBook -> CodeLength
+totalEncodedLength :: CodeBook -> Int
 totalEncodedLength = foldr go 0
-    where go (_, w, l, _) lTot = lTot + w*l
+    where go (_, w, l, _) lTot = lTot + w*toInt l
 
 -- bits required to encode Huffman tree
 sizeHdr :: CodeBook -> Int
