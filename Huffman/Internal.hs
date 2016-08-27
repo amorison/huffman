@@ -5,6 +5,7 @@ import Data.Ord(comparing)
 import Data.Word
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Array.IArray as IArr
+import qualified Data.Array.Unboxed as AU
 import qualified Data.Tree as T
 
 type Symbol = Word8
@@ -20,6 +21,7 @@ type CodeBook = [CodeBookEntry]
 
 type CodeTree = T.Tree Symbol
 type CodeArray = IArr.Array Symbol HuffmanCode
+type LengthArray = AU.UArray Symbol CodeLength
 
 getSymbol :: CodeBookEntry -> Symbol
 getSymbol (s, _, _, _) = s

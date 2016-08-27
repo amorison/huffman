@@ -1,7 +1,7 @@
 module Huffman.CodeBook
 ( buildCodeBook
 , orderedLengthCode
-, buildCodeArray
+, buildArrays
 , buildCodeTree
 ) where
 
@@ -105,8 +105,9 @@ orderedLengthCode = orderedListOf getCodeLength 0
 -- return Array containing HuffmanCode indexed by Symbol
 --   bits of codes are reversed to have the most significant
 --   bit first in the encoded file
-buildCodeArray :: CodeBook -> CodeArray
-buildCodeArray cb = IArr.listArray (0, 255) $ zipWith revBitsCode olc ocd
+buildArrays :: CodeBook -> (CodeArray, LengthArray)
+buildArrays cb = (IArr.listArray (0, 255) $ zipWith revBitsCode olc ocd,
+                  IArr.listArray (0, 255) olc)
     where ocd = orderedListOf getCode 0 cb
           olc = orderedLengthCode cb
 
