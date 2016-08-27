@@ -65,11 +65,19 @@ depthLeaves = go 0
               where depths1 = go (d+1) ht1
                     depths2 = go (d+1) ht2
 
+-- construct codes in ascending order based on
+-- descending list of code lengths and symbols
+canonicalCodes :: [(CodeLength, Symbol)] -> [(Symbol, CodeLength, HuffmanCode)]
+canonicalCodes = foldl' go []
+    where go [] (l,s) = [(s, l, 2^l - 1)]
+          go xs@((_,lx,cx):xt) (l,s) = (s,l,c):xs
+              where c = cx `quot` 2^(max 0 (lx-l)) - 1
+
 canonicalBook :: [(CodeLength, Symbol, Weight)] -> CodeBook
-canonicalBook = foldl' go [] . sortOn Down
-    where go [] (d,s,w) = [(s, w, d, 2^d - 1)]
-          go xs@((_,_,dx,cx):xt) (d,s,w) = (s,w,d,c):xs
-              where c = cx `quot` 2^(max 0 (dx-d)) - 1
+canonicalBook lsw = zipWith (\(s,l,c) w -> (s,w,l,c)) slc ws
+    where descList = sortOn Down lsw
+          slc = canonicalCodes $ map (\(l,s,_) -> (l,s)) descList
+          ws = reverse $ map (\(_,_,w) -> w) descList
 
 codeFromTree :: HuffmanTree -> CodeBook
 codeFromTree = canonicalBook . depthLeaves
