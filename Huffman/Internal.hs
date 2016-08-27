@@ -4,6 +4,8 @@ import Data.Function(on)
 import Data.Ord(comparing)
 import Data.Word
 import qualified Data.ByteString.Lazy as BL
+import qualified Data.Array.IArray as IArr
+import qualified Data.Tree as T
 
 type Symbol = Word8
 type Message = BL.ByteString
@@ -15,6 +17,9 @@ type FrequencyTable = [(Symbol, Weight)]
 
 type CodeBookEntry = (Symbol, Weight, CodeLength, HuffmanCode)
 type CodeBook = [CodeBookEntry]
+
+type CodeTree = T.Tree Symbol
+type CodeArray = IArr.Array Symbol HuffmanCode
 
 getSymbol :: CodeBookEntry -> Symbol
 getSymbol (s, _, _, _) = s
@@ -48,3 +53,17 @@ mergeHTs ht1 ht2 = Node (w1+w2) ht1 ht2
 -- some conversion stuff
 toWord8 = fromIntegral :: Int   -> Word8
 toInt   = fromIntegral :: Word8 -> Int
+toItgr  = fromIntegral :: Word8 -> Integer
+
+-- replace element in a list
+replaceAt :: Int -> a -> [a] -> [a]
+replaceAt i x xs = xh ++ (x:xt)
+    where (xh, (_:xt)) = splitAt i xs
+
+-- reverse bit order of the significant portion
+-- of a given HuffmanCode
+revBitsCode :: CodeLength -> HuffmanCode -> HuffmanCode
+revBitsCode _ 0 = 0
+revBitsCode 0 c = c
+revBitsCode n c = h + 2*(revBitsCode (n-1) l)
+    where (h, l) = c `quotRem` (2^(toItgr n-1))
