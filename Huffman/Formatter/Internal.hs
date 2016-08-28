@@ -17,3 +17,12 @@ compact npack = reverse . final . foldl' go (0, 0, [])
             else ((bpos + npack) `rem` 8, h,
                   (l*(2^bpos) + curWd8):out)
                 where (h,l) = n `quotRem` (2^(8-bpos))
+
+-- Write the asked number of bits of a HuffmanCode
+-- to a list of bytes
+spread :: CodeLength -> HuffmanCode -> [Word8]
+spread 0 _ = []
+spread l c = if l<=8
+             then [fromIntegral $ c `rem` (2^(toItgr l))]
+             else (fromIntegral r):spread (l-8) r
+                 where r = c `rem` (2^8)
