@@ -18,7 +18,7 @@ impl<'a, V> SymbolFactory<'a, V> {
     fn new(tree: &'a HuffmanTree<V>, n_symbols: u64) -> Self {
         Self {
             root: tree,
-            tree: tree,
+            tree,
             n_symbols
         }
     }
@@ -128,7 +128,7 @@ where
             break;
         }
         let decoded = factory.decode_bytes(buf);
-        output.write(&decoded)?;
+        output.write_all(&decoded)?;
         input.consume(length);
     }
     output.flush()?;

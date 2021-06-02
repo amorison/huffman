@@ -113,7 +113,7 @@ impl HuffmanCanonical {
                 byte_buffer += repr << bit_shift;
                 bit_shift += nbits;
                 while bit_shift >= 8 {
-                    output.write(&[(byte_buffer % 256) as u8])?;
+                    output.write_all(&[(byte_buffer % 256) as u8])?;
                     byte_buffer >>= 8;
                     bit_shift -= 8;
                 }
@@ -122,7 +122,7 @@ impl HuffmanCanonical {
             input.consume(length);
         }
         // dump extraneous bits in the output
-        output.write(&[byte_buffer as u8])?;
+        output.write_all(&[byte_buffer as u8])?;
         output.flush()?;
 
         Ok(())
@@ -138,9 +138,7 @@ fn explore(tree: HuffmanTree<u64>, depth: u8) -> Vec<(u8, u8, u64)> {
             summary
         }
         HuffmanTree::Leaf { value, byte } => {
-            let mut summary = Vec::with_capacity(1);
-            summary.push((depth, byte, value));
-            summary
+            vec![(depth, byte, value)]
         }
     }
 }
